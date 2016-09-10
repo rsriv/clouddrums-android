@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+
+    android:weightSum="1"
+    android:background="@drawable/back">>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/textView4" />
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:id="@+id/imageView2"
+        android:src="@drawable/title" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.18" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/bpmLabel"
+        android:id="@+id/textView"
+        android:textColor="@color/bodyColor"
+        android:layout_marginLeft="10dp"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+    <EditText android:id="@+id/bpmField"
+       android:layout_width="200dp"
+       android:layout_height="60dp"
+       android:hint="@string/bpmField"
+        android:textColor="@color/titleColor"
+        android:background="@color/backColor"
+
+        android:inputType="textFilter|number"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:paddingLeft="5dp"
+        android:textSize="30dp" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/invalidTempo"
+        android:layout_marginLeft="15dp"
+        android:textColor="@color/alertColor" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/loopLabel"
+        android:id="@+id/textView2"
+        android:textColor="@color/bodyColor"
+        android:layout_marginLeft="10dp"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/loopField"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:hint="@string/loopField"
+        android:textColor="@color/titleColor"
+        android:background="@color/backColor"
+        android:inputType="textFilter|number"
+
+        android:layout_weight="0.18"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:paddingLeft="5dp"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/invalidLoop"
+        android:layout_marginLeft="15dp"
+        android:textColor="@color/alertColor" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/kitLabel"
+        android:id="@+id/textView5"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:paddingLeft="7dp"
+        android:paddingBottom="10dp"
+        android:layout_marginLeft="5dp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
+
+    <RadioGroup
+        android:id="@+id/kitType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hiphopLabel"
+        android:id="@+id/hipHopKit"
+        android:checked="true"
+        android:textColor="@color/bodyColor"
+        android:textSize="25dp"
+        android:layout_marginLeft="10dp"
+        android:buttonTint="@color/radioColor"
+        android:paddingLeft="10dp" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rockLabel"
+        android:id="@+id/rockKit"
+        android:checked="false"
+        android:textColor="@color/bodyColor"
+        android:textSize="25dp"
+        android:layout_marginLeft="10dp"
+        android:paddingLeft="10dp"
+        android:buttonTint="@color/radioColor"
+        android:layout_marginTop="10dp" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bongosLabel"
+        android:id="@+id/bongosKit"
+        android:checked="false"
+        android:textColor="@color/bodyColor"
+        android:textSize="25dp"
+        android:layout_marginLeft="10dp"
+        android:paddingLeft="10dp"
+        android:buttonTint="@color/radioColor"
+        android:layout_marginTop="10dp" />
+</RadioGroup>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.11" />
+
+    <Button
+
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:text="@string/enter"
+        android:onClick="play"
+        android:id="@+id/button1"
+        android:textColor="@color/titleColor"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/buttonColor" />
+
+</LinearLayout>

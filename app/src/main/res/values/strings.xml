@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">clouddrums</string>
+    <string name="title">clouddrums</string>
+
+
+    <string name="bpmField">BPM</string>
+    <string name="loopField">Loop Length</string>
+    <string name="bpmLabel">Tempo:</string>
+    <string name="loopLabel">Loop Length (Bars):</string>
+    <string name="kitLabel">Kit Type</string>
+    <string name="slogan">The virtual session drummer.</string>
+    <string name="hiphopLabel">Hip Hop Kit</string>
+    <string name="rockLabel">Rock Kit</string>
+    <string name="bongosLabel">Bongos</string>
+    <string name="enter">Play</string>
+
+    <string name="stop">Stop</string>
+
+</resources>

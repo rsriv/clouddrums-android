@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0B3C5D</color>
+    <color name="colorPrimaryDark">#000</color>
+    <color name="colorAccent">#2672c4</color>
+    <color name="backColor">#1b5e20</color>
+    <color name="buttonColor">#000</color>
+    <color name="radioColor">#e9d23b</color>
+    <color name="titleColor">#FFF</color>
+    <color name="bodyColor">#3af7ff</color>
+    <color name="alertColor">#ecf56f</color>
+    <color name="wordColor">#e2fc8e</color>
+</resources>
