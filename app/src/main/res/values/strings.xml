@@ -12,8 +12,10 @@
     <string name="hiphopLabel">Hip Hop Kit</string>
     <string name="rockLabel">Rock Kit</string>
     <string name="bongosLabel">Bongos</string>
-    <string name="enter">Play</string>
 
+    <string name="enter">Play</string>
     <string name="stop">Stop</string>
 
+    <string name="badTempo">Invalid Tempo</string>
+    <string name="badLoop">Invalid Loop Length</string>
 </resources>

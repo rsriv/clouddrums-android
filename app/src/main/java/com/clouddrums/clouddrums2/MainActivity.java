@@ -5,6 +5,7 @@ import android.media.SoundPool;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,10 +18,11 @@ public class MainActivity extends AppCompatActivity {
     public int hatId, kickId, snareId;
     public int playCount = 0, valid = 0;
     public Thread t;
-    final SoundPool sp1 = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
-    final SoundPool sp2 = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
-    final SoundPool sp3 = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+    final SoundPool hatSound = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+    final SoundPool kickSound = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+    final SoundPool snareSound = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
     public int open = 0;
+    private static final String TAG = "MainActivity";
     public static int randInt(int min, int max) {
         Random rand = new Random();
         int randomNum = rand.nextInt((max - min) + 1) + min;
@@ -35,16 +37,16 @@ public class MainActivity extends AppCompatActivity {
 
     public static boolean isNumeric(String str)
     {
-        int d;
+        int bufferInt;
         try
         {
-            d = Integer.parseInt(str);
+            bufferInt = Integer.parseInt(str);
         }
         catch(NumberFormatException nfe)
         {
             return false;
         }
-        if (d>0 && d<=10000) return true;
+        if (bufferInt>0 && bufferInt<=10000) return true;
         else return false;
     }
 
@@ -55,9 +57,10 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.this.overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         setContentView(R.layout.activity_main);
 
+        //Set volume control
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
     }
+
     @Override
     protected void onStop (){
         super.onStop();
@@ -75,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
             button1.setText("Play");
             valid = 0;
             playCount = 0;
-        } else {
+        }
+        else {
             valid = 1;
         }
 
@@ -89,34 +93,34 @@ public class MainActivity extends AppCompatActivity {
             badBpm.setText("");
             TextView badField = (TextView) findViewById(R.id.invalidLoop);
             badField.setText("");
+
             //Set kit type
             RadioGroup radioKitGroup = (RadioGroup) findViewById(R.id.kitType);
             int selectedId = radioKitGroup.getCheckedRadioButtonId();
             RadioButton radioKitButton = (RadioButton) findViewById(selectedId);
             String kitType = radioKitButton.getText().toString();
 
-
             if (kitType.equals("Rock Kit")) {
                 if (randInt(0, 1) == 1)
-                    hatId = sp1.load(this, R.raw.rockhat, 1);
+                    hatId = hatSound.load(this, R.raw.rockhat, 1);
                 else
-                    hatId = sp1.load(this, R.raw.rockride, 1);
-                kickId = sp2.load(this, R.raw.rockkick, 1);
-                snareId = sp3.load(this, R.raw.rocksnare, 1);
+                    hatId = hatSound.load(this, R.raw.rockride, 1);
+                    kickId = kickSound.load(this, R.raw.rockkick, 1);
+                    snareId = snareSound.load(this, R.raw.rocksnare, 1);
             }
 
             if (kitType.equals("Bongos"))
 
             {
-                hatId = sp1.load(this, R.raw.bongohigh, 1);
-                kickId = sp2.load(this, R.raw.bongolow, 1);
-                snareId = sp3.load(this, R.raw.bongomid, 1);
+                hatId = hatSound.load(this, R.raw.bongohigh, 1);
+                kickId = kickSound.load(this, R.raw.bongolow, 1);
+                snareId = snareSound.load(this, R.raw.bongomid, 1);
             }
 
             if (kitType.equals("Hip Hop Kit")) {
-                hatId = sp1.load(this, R.raw.hiphophat, 1);
-                kickId = sp2.load(this, R.raw.hiphopkick, 1);
-                snareId = sp3.load(this, R.raw.hiphopsnare, 1);
+                hatId = hatSound.load(this, R.raw.hiphophat, 1);
+                kickId = kickSound.load(this, R.raw.hiphopkick, 1);
+                snareId = snareSound.load(this, R.raw.hiphopsnare, 1);
             }
 
             t = new Thread(new Runnable() {
@@ -125,20 +129,21 @@ public class MainActivity extends AppCompatActivity {
                     long bpm = (long) Integer.parseInt(bpmField.getText().toString());
                     EditText loopField = (EditText) findViewById(R.id.loopField);
                     int loopLength = Integer.parseInt(loopField.getText().toString());
-                    float beatTime1 = 15f / bpm;
-                    long beatTime = (long) (beatTime1 * 1000.00000f);
-                    int num16ths = loopLength * 16;
+                    //float beatTimeSec = 15f / bpm; //beattime in seconds -> UPDATE: waste of memory
+                    long beatTime = (long) (15000f/bpm); //beattime in milliseconds
+                    int num16ths = loopLength * 16; //number of 16th notes per loopLength bars
                     int[] kick, snare, hiHat;
                     kick = new int[num16ths];
                     snare = new int[num16ths];
                     hiHat = new int[num16ths];
                     int beat = 1;
+
                     // generate piano roll
                     while (beat <= num16ths)
 
                     {
                         //kick
-                        if (beat % 4 == 0 || (beat - 2) % 4 == 0) {
+                        if (beat % 2 == 0) {
                             kick[beat - 1] = hitOrNo(2);
                         }
                         if ((beat + 1) % 4 == 0) {
@@ -174,12 +179,10 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         beat += 1;
-
                     }
 
                     valid = 1;
                     int kickPlay;
-                    int wholeBeat = 1;
                     while (valid == 1) {
                         beat = 1;
 
@@ -191,34 +194,26 @@ public class MainActivity extends AppCompatActivity {
 
                             if (kick[beat - 1] == 1) {
                                 kickPlay = 1;
-                                //Play Kick
-                                //playKick.start();
-                                sp2.play(kickId, 1, 1, 0, 0, 1);
-
+                                kickSound.play(kickId, 1, 1, 0, 0, 1);
                             }
 
                             //play snare
                             if (snare[beat - 1] == 1 && kickPlay == 0) {
-                                //Play Snare
-                                //playSnare.start();
-                                sp3.play(snareId, 1, 1, 0, 0, 1);
+                                snareSound.play(snareId, 1, 1, 0, 0, 1);
                             }
 
                             //play hiHat
                             if (hiHat[beat - 1] == 1) {
-                                //Play Hat
-                                //playHat.start();
-                                sp1.play(hatId, 1, 1, 0, 0, 1);
+                                hatSound.play(hatId, 1, 1, 0, 0, 1);
                             }
+
                             try {
-                                //wait beatTime seconds for next beat
+                                //Wait beatTime seconds for next beat
                                 Thread.sleep(beatTime);
                             } catch (InterruptedException e) {
-
+                                Log.e(TAG,"thread sleep failed");
                             }
                             beat += 1;
-
-
                         }
 
                         if (playCount % 2 == 0) {
@@ -229,45 +224,49 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-//Play
+            //Change button text on play and start player module
             if (playCount % 2 != 0) {
-                button1.setText("Stop");
+                button1.setText(R.string.stop);
                 t.start();
                 valid = 1;
             }
-            //Stop
+            //Change button text on stop
             else {
-                button1.setText("Play");
+                button1.setText(R.string.enter);
                 valid = 0;
                 playCount = 0;
             }
 
         }
+
+        //Invalid tempo but valid loop length
         else if (!isNumeric(bpm1) && isNumeric(loopLength1) ){
             TextView badBpm = (TextView) findViewById(R.id.invalidTempo);
-            badBpm.setText("Invalid Tempo");
+            badBpm.setText(R.string.badTempo);
             TextView badField = (TextView) findViewById(R.id.invalidLoop);
             badField.setText("");
             vibe.vibrate(50);
         }
+
+        //Invalid loop length but valid tempo
         else if (isNumeric(bpm1) && !isNumeric(loopLength1) ){
             TextView badBpm = (TextView) findViewById(R.id.invalidTempo);
             badBpm.setText("");
             TextView badField = (TextView) findViewById(R.id.invalidLoop);
-            badField.setText("Invalid Loop Length");
+            badField.setText(R.string.badLoop);
             vibe.vibrate(50);
         }
+
+        //Invalid tempo and loop length
         else {
             TextView badBpm = (TextView) findViewById(R.id.invalidTempo);
-            badBpm.setText("Invalid Tempo");
+            badBpm.setText(R.string.badTempo);
             TextView badField = (TextView) findViewById(R.id.invalidLoop);
-            badField.setText("Invalid Loop Length");
+            badField.setText(R.string.badLoop);
             vibe.vibrate(50);
         }
 
     }
-
-
 
 }
 
