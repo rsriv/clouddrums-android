@@ -15,12 +15,14 @@ import android.widget.TextView;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    public int hatId, kickId, snareId;
+    public int hatId, kickId, snareId, ohatId, crashId;
     public int playCount = 0, valid = 0;
     public Thread t;
     final SoundPool hatSound = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
     final SoundPool kickSound = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
     final SoundPool snareSound = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+    final SoundPool ohatSound = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+    final SoundPool crashSound = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
     public int open = 0;
     private static final String TAG = "MainActivity";
     public static int randInt(int min, int max) {
@@ -67,22 +69,26 @@ public class MainActivity extends AppCompatActivity {
         valid = 0;
         playCount = 0;
         Button button1 = (Button) findViewById(R.id.button1);
-        button1.setText("Play");
+        button1.setText(R.string.enter);
     }
 
     public void play(View view) {
         Vibrator vibe = (Vibrator) this.getSystemService(this.VIBRATOR_SERVICE) ;
         Button button1 = (Button) findViewById(R.id.button1);
         playCount++;
+
+        //Stop
         if (playCount % 2 == 0) {
-            button1.setText("Play");
+            button1.setText(R.string.enter);
             valid = 0;
             playCount = 0;
         }
+        //Start
         else {
             valid = 1;
         }
 
+        //Get arguments from form
         EditText bpmField1 = (EditText) findViewById(R.id.bpmField);
         String bpm1 = bpmField1.getText().toString();
         EditText loopField1 = (EditText) findViewById(R.id.loopField);
@@ -107,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
                     hatId = hatSound.load(this, R.raw.rockride, 1);
                     kickId = kickSound.load(this, R.raw.rockkick, 1);
                     snareId = snareSound.load(this, R.raw.rocksnare, 1);
+                    ohatId = ohatSound.load(this, R.raw.rockohat, 1);
+                    crashId = crashSound.load(this, R.raw.rockcrash, 1);
             }
 
             if (kitType.equals("Bongos"))
@@ -121,10 +129,12 @@ public class MainActivity extends AppCompatActivity {
                 hatId = hatSound.load(this, R.raw.hiphophat, 1);
                 kickId = kickSound.load(this, R.raw.hiphopkick, 1);
                 snareId = snareSound.load(this, R.raw.hiphopsnare, 1);
+                ohatId = ohatSound.load(this, R.raw.hiphopohat, 1);
             }
 
             t = new Thread(new Runnable() {
                 public void run() {
+                    //compute necessary data
                     EditText bpmField = (EditText) findViewById(R.id.bpmField);
                     long bpm = (long) Integer.parseInt(bpmField.getText().toString());
                     EditText loopField = (EditText) findViewById(R.id.loopField);
@@ -132,13 +142,15 @@ public class MainActivity extends AppCompatActivity {
                     //float beatTimeSec = 15f / bpm; //beattime in seconds -> UPDATE: waste of memory
                     long beatTime = (long) (15000f/bpm); //beattime in milliseconds
                     int num16ths = loopLength * 16; //number of 16th notes per loopLength bars
-                    int[] kick, snare, hiHat;
+                    int[] kick, snare, hiHat, oHat, crash;
                     kick = new int[num16ths];
                     snare = new int[num16ths];
                     hiHat = new int[num16ths];
+                    oHat = new int[num16ths];
+                    crash = new int[num16ths];
                     int beat = 1;
 
-                    // generate piano roll
+                    //piano roll generator
                     while (beat <= num16ths)
 
                     {
@@ -164,12 +176,12 @@ public class MainActivity extends AppCompatActivity {
                             snare[beat - 1] = hitOrNo(2);
                         }
                         if ((beat + 3) % 8 == 0) {
-                            snare[beat - 1] = hitOrNo(10);
+                            snare[beat - 1] = 1;
                         }
 
                         //hiHat
                         if ((beat - 1) % 2 == 0) {
-                            hiHat[beat - 1] = hitOrNo(10);
+                            hiHat[beat - 1] = 1;
                         }
                         if ((beat + 2) % 4 == 0) {
                             hiHat[beat - 1] = hitOrNo(3);
@@ -178,16 +190,30 @@ public class MainActivity extends AppCompatActivity {
                             hiHat[beat - 1] = hitOrNo(2);
                         }
 
+                        //crash
+                        if ((beat - 1) % 16 == 0) {
+                            crash[beat - 1] = hitOrNo(5);
+                        }
+
+                        //oHat
+                        if ((beat - 1) % 8 == 0) {
+                            oHat[beat - 1] = hitOrNo(3);
+                        }
                         beat += 1;
                     }
 
+                    //player module
                     valid = 1;
                     int kickPlay;
+                    int ohatPlay;
+                    int crashPlay;
                     while (valid == 1) {
                         beat = 1;
 
                         while (beat <= (num16ths + 1) && valid == 1) {
                             kickPlay = 0;
+                            ohatPlay = 0;
+                            crashPlay = 0;
                             if (beat == (num16ths + 1)) {
                                 break;
                             }
@@ -202,8 +228,18 @@ public class MainActivity extends AppCompatActivity {
                                 snareSound.play(snareId, 1, 1, 0, 0, 1);
                             }
 
+                            //play crash
+                            if (crash[beat - 1] == 1) {
+                                crashSound.play(crashId, 1, 1, 0, 0, 1);
+                            }
+                            //play oHat
+                            if (oHat[beat - 1] == 1) {
+                                ohatSound.play(ohatId, 1, 1, 0, 0, 1);
+                                ohatPlay = 1;
+                            }
+
                             //play hiHat
-                            if (hiHat[beat - 1] == 1) {
+                            if (hiHat[beat - 1] == 1 && ohatPlay == 0) {
                                 hatSound.play(hatId, 1, 1, 0, 0, 1);
                             }
 
